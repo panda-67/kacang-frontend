@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "npx serve@latest out",
-    "deploy": "next build && rsync -av --delete --exclude=.gitignore --exclude=.htaccess --exclude=favicon.ico --exclude=index.php --exclude=robots.txt out/ ../kacang-rebus/public_html/kacang/",
+    "deploy": "next build && rsync -av --delete --exclude=.gitignore --exclude=.htaccess --exclude=index.php --exclude=robots.txt out/ ../kacang-rebus/public_html/kacang/",
     "lint": "eslint"
   },
   "dependencies": {
