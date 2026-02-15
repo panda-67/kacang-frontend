@@ -5,10 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "npx serve@latest out",
+    "deploy": "next build && rsync -av --delete --exclude=.gitignore --exclude=.htaccess --exclude=favicon.ico --exclude=index.php --exclude=robots.txt out/ ../kacang-rebus/public_html/kacang/",
     "lint": "eslint"
   },
   "dependencies": {
+    "lucide-react": "^0.564.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"
