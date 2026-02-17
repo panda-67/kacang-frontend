@@ -21,35 +21,35 @@ export default function LoginPage() {
     }
   }, [loading, user, router]);
 
-  const handleLogin = async () => {
-    setLoading(true)
-    setError(null)
+  const handleLogin = () => {
+    setLoading(true);
+    setError(null);
 
-    try {
-      const response = await fetch(`${apiUrl}/login`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+    fetch(`${apiUrl}/login`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          return await response
+            .json()
+            .catch(() => null)
+            .then((data) => {
+              throw new Error(data?.message || "Invalid credentials");
+            });
+        }
+
+        return await response.json(); // jika Anda ingin membaca body
       })
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => null)
-        throw new Error(data?.message || 'Invalid credentials')
-      }
-
-      await refreshUser();
-      router.push("/overview");
-
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+      .then(() => { refreshUser(); })
+      .catch((err) => { setError(err.message); })
+      .finally(() => { setLoading(false); });
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">

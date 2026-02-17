@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npx serve@latest out",
-    "deploy": "next build && rsync -av --delete --exclude=.gitignore --exclude=.htaccess --exclude=index.php --exclude=robots.txt out/ ../kacang-rebus/public_html/kacang/",
+    "start": "php -S localhost:3000 -t out",
+    "deploy": "next build && rsync -av --delete out/ ../kacang-rebus/public_html/kacang/app/",
     "lint": "eslint"
   },
   "dependencies": {

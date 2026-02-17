@@ -31,11 +31,13 @@ export function AuthProvider({
   const fetchUser = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user`,
-        {
-          credentials: "include",
-        }
-      );
+        `${process.env.NEXT_PUBLIC_API_URL}/user`, {
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
 
       if (!res.ok) {
         setUser(null);
