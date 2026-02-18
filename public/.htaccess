@@ -1,12 +1,6 @@
 RewriteEngine On
 
-# Redirect /overview -> /overview/
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} !\.[^./]+$
-RewriteRule ^(.+[^/])$ https://%{HTTP_HOST}/$1/ [R=301,L]
-
-# Optional SPA fallback (jika memang perlu)
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.html [L]
+# =========================
+# 4. Server 404
+# =========================
+ErrorDocument 404 /404.html

@@ -2,10 +2,26 @@
 
 import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import BurgerButton from "../ui/BurgerButton";
 
-export default function Topbar() {
+export default function Topbar({ open, setOpen }: { open: any, setOpen: any }) {
   const { user, logout } = useAuth();
   const router = useRouter();
+
+  const [profileOpen, setProfileOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -15,34 +31,78 @@ export default function Topbar() {
       console.error("Logout failed", error);
     }
   };
+
   return (
-    <header className="flex h-16 items-center justify-between border-b border-slate-800 bg-slate-950 px-6">
-      <div>
-        <h1 className="text-sm font-medium text-slate-400">
-          Active Location
-        </h1>
-        <p className="text-sm font-semibold text-slate-200">
-          Main Store
-        </p>
+    <header className="relative flex h-16 items-center justify-between border-b border-slate-800 bg-slate-950 px-4 md:px-6">
+
+      {/* LEFT */}
+      <div className="flex items-center gap-3">
+        <BurgerButton open={open} setOpen={setOpen} />
+
+        <div className="hidden md:block">
+          <h1 className="text-xs font-medium text-slate-400">
+            Active Location
+          </h1>
+          <p className="text-sm font-semibold text-slate-200">
+            Main Store
+          </p>
+        </div>
       </div>
 
+      {/* RIGHT */}
       <div className="flex items-center gap-4">
-        <div className="rounded-lg bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-400">
+
+        {/* Desktop business status */}
+        <div className="hidden md:inline-flex rounded-lg bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-400">
           Business Day: OPEN
         </div>
 
         {user && (
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-slate-300">
-              {user.name}
-            </span>
+          <div ref={ref} className="relative">
 
+            {/* Mobile avatar button */}
             <button
-              onClick={handleLogout}
-              className="rounded-lg cursor-pointer border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:border-red-500 hover:text-red-400"
+              onClick={() => setProfileOpen((prev) => !prev)}
+              className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-slate-300"
             >
-              Logout
+              <span className="hidden md:inline">
+                {user.name}
+              </span>
+              <span className="md:hidden">
+                👤
+              </span>
             </button>
+
+            {/* Dropdown panel */}
+            {profileOpen && (
+              <div className="absolute flex flex-col items-center md:items-start right-0 mt-2 w-48 rounded-xl border border-slate-800 bg-slate-900 p-4 shadow-xl">
+
+                <div className="mb-3 text-sm text-slate-300">
+                  {user.name}
+                </div>
+
+                <div className="md:hidden mb-3 flex flex-col items-center">
+                  <p className="text-xs text-slate-400">
+                    Active Location
+                  </p>
+                  <p className="text-sm font-semibold text-slate-200">
+                    Main Store
+                  </p>
+                </div>
+
+                <div className="md:hidden mb-3 w-max rounded-lg bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-400">
+                  Business Day: OPEN
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-300 transition hover:border-red-500 hover:text-red-400"
+                >
+                  Logout
+                </button>
+
+              </div>
+            )}
           </div>
         )}
       </div>
