@@ -8,8 +8,7 @@ export default function DashboardLayout({
 }) {
   return (
     <RequireAuth>
-      <AppShell>{children}</AppShell>;
+      <AppShell>{children}</AppShell>
     </RequireAuth>
   );
 }
-

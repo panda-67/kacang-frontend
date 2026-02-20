@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import BurgerButton from "../ui/BurgerButton";
 
 export default function Topbar({ open, setOpen }: { open: any, setOpen: any }) {
-  const { user, logout } = useAuth();
+  const { user, setActiveLocation, logout } = useAuth();
   const router = useRouter();
 
   const [profileOpen, setProfileOpen] = useState(false);
@@ -43,11 +43,26 @@ export default function Topbar({ open, setOpen }: { open: any, setOpen: any }) {
           <h1 className="text-xs font-medium text-slate-400">
             Active Location
           </h1>
+          {/* {user?.role !== 'manager' && ( */}
           <p className="text-sm font-semibold text-slate-200">
-            Main Store
+            {user?.activeLocationName}
           </p>
+          {/* )} */}
         </div>
       </div>
+
+      {user?.role === 'manager' && (
+        <select
+          value={user?.activeLocation}
+          onChange={(e) => setActiveLocation(e.target.value)}
+        >
+          {user?.accessibleLocations.map((loc: any) => (
+            <option key={loc.id} value={loc.id}>
+              {loc.name}
+            </option>
+          ))}
+        </select>
+      )}
 
       {/* RIGHT */}
       <div className="flex items-center gap-4">
@@ -75,10 +90,15 @@ export default function Topbar({ open, setOpen }: { open: any, setOpen: any }) {
 
             {/* Dropdown panel */}
             {profileOpen && (
-              <div className="absolute flex flex-col items-center md:items-start right-0 mt-2 w-48 rounded-xl border border-slate-800 bg-slate-900 p-4 shadow-xl">
+              <div className="absolute flex flex-col items-center right-0 mt-2 w-48 rounded-xl border border-slate-800 bg-slate-900 p-4 shadow-xl">
 
-                <div className="mb-3 text-sm text-slate-300">
-                  {user.name}
+                <div className="mb-3 text-sm text-slate-300 text-center">
+                  <p className="text-sm font-semibold text-slate-200">
+                    {user.name}
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    {user.roleName}
+                  </p>
                 </div>
 
                 <div className="md:hidden mb-3 flex flex-col items-center">

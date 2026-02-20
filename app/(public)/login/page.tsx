@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/providers/AuthProvider'
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react'
 
@@ -55,9 +56,9 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
       <div className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-900 p-8 shadow-sm">
 
-        <p className="mb-2 text-xs uppercase tracking-widest text-amber-500">
+        <Link href="/" className="mb-2 text-xs uppercase tracking-widest text-amber-500">
           KacangRebus
-        </p>
+        </Link>
 
         <h1 className="mb-6 text-2xl font-semibold text-slate-100">
           Sign in

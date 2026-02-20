@@ -1,15 +1,26 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+
+type Location = {
+  id: string
+  name: string
+}
 
 type User = {
   id: string;
   name: string;
   email: string;
   role: string;
+  roleName: string;
+  activeLocation: string;
+  activeLocationName: string;
+  accessibleLocations: Location[];
 };
 
 type AuthContextType = {
+  activeLocation: string | null;
+  setActiveLocation: Dispatch<SetStateAction<string | null>>;
   refreshUser: () => Promise<void>;
   logout: () => Promise<void>;
   user: User | null;
@@ -32,15 +43,17 @@ export function AuthProvider({ children }: { children: React.ReactNode; }) {
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeLocation, setActiveLocation] = useState<string | null>(null);
 
-  const fetchUser = async () => {
+  const fetchUser = async (location?: string | null) => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/user`, {
         credentials: "include",
         headers: {
-          "Content-Type": "application/json",
           Accept: "application/json",
+          "Content-Type": "application/json",
+          ...(location && { "X-Active-Location": location }),
         },
       });
 
@@ -56,6 +69,10 @@ export function AuthProvider({ children }: { children: React.ReactNode; }) {
       const data = await res.json();
       setUser(data);
 
+      if (!activeLocation && data.activeLocation) {
+        setActiveLocation(data.activeLocation);
+      }
+
     } catch {
       setUser(null);
     }
@@ -64,6 +81,12 @@ export function AuthProvider({ children }: { children: React.ReactNode; }) {
   useEffect(() => {
     fetchUser().finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (activeLocation) {
+      fetchUser(activeLocation);
+    }
+  }, [activeLocation]);
 
   const refreshUser = async () => {
     await fetchUser();
@@ -74,13 +97,23 @@ export function AuthProvider({ children }: { children: React.ReactNode; }) {
       `${process.env.NEXT_PUBLIC_API_URL}/logout`, {
       method: "POST",
       credentials: "include",
+      headers: { "X-Active-Location": "" }
     });
 
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, refreshUser, logout }} >
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        activeLocation,
+        setActiveLocation,
+        refreshUser,
+        logout
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

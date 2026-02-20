@@ -6,6 +6,7 @@ export async function apiFetch(
     credentials: 'include',
     headers: {
       Accept: 'application/json',
+      'Content-Type': 'application/json',
       ...(options?.headers || {}),
     },
     ...options,
