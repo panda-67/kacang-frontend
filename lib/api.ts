@@ -1,20 +1,37 @@
 export async function apiFetch(
   url: string,
-  options?: RequestInit
+  options: RequestInit = {}
 ) {
   const response = await fetch(url, {
     credentials: 'include',
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json',
-      ...(options?.headers || {}),
+      ...(options?.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(options?.headers || {})
     },
     ...options,
   })
 
-  if (!response.ok) {
-    throw new Error('Request failed')
+  let data: any = null
+
+  try {
+    data = await response.json()
+  } catch {
+    // Laravel kadang tidak mengirim JSON (misal 204 No Content)
+    data = null
   }
 
-  return response.json()
+  if (!response.ok) {
+    const error: any = new Error(
+      data?.message ?? response.statusText ?? 'Request failed'
+    )
+
+    error.status = response.status
+    error.errors = data?.errors ?? null
+    error.data = data ?? null
+
+    throw error
+  }
+
+  return data
 }

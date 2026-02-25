@@ -1,10 +1,11 @@
 "use client";
 
+import { showError, showToast } from "@/lib/alert";
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 
 type Location = {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 type User = {
@@ -14,8 +15,12 @@ type User = {
   role: string;
   roleName: string;
   activeLocation: string;
-  activeLocationName: string;
-  accessibleLocations: Location[];
+  activeLocationName: string | null;
+  accessibleLocations: Location[] | [];
+  businessDay: {
+    id: string;
+    open: boolean;
+  };
 };
 
 type AuthContextType = {
@@ -63,7 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode; }) {
       }
 
       if (!res.ok) {
-        throw new Error("Failed to fetch user");
+        const data = await res.json();
+        throw new Error(data?.message || "Failed to fetch user");
       }
 
       const data = await res.json();
@@ -73,8 +79,9 @@ export function AuthProvider({ children }: { children: React.ReactNode; }) {
         setActiveLocation(data.activeLocation);
       }
 
-    } catch {
+    } catch (data: any) {
       setUser(null);
+      showError(data.message);
     }
   };
 
@@ -93,14 +100,28 @@ export function AuthProvider({ children }: { children: React.ReactNode; }) {
   };
 
   const logout = async () => {
-    await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/logout`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "X-Active-Location": "" }
-    });
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "X-Active-Location": "" }
+        }
+      );
 
-    setUser(null);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Logout failed");
+      }
+
+      showToast(data.message, "success");
+      setUser(null);
+
+    } catch (error: any) {
+      showToast(error.message, "error");
+    }
   };
 
   return (

@@ -2,15 +2,18 @@
 
 import { useEffect, useState } from 'react'
 import { fetchProducts } from './actions'
+import { useAuth } from '@/providers/AuthProvider'
 
 export function useProducts() {
-  const [products, setProducts] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [processing, setProcessing] = useState(false)
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
-    load()
-  }, [])
+    if (user) { load() }
+  }, [user])
+
 
   async function load() {
     setLoading(true)
@@ -24,7 +27,7 @@ export function useProducts() {
     }
   }
 
-  async function refresh() {
+  async function refreshProducts() {
     setProcessing(true)
     try {
       const data = await fetchProducts()
@@ -38,6 +41,6 @@ export function useProducts() {
     products,
     loading,
     processing,
-    refresh
+    refreshProducts
   }
 }

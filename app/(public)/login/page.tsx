@@ -1,5 +1,6 @@
 'use client'
 
+import { showToast } from '@/lib/alert';
 import { useAuth } from '@/providers/AuthProvider'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -41,14 +42,20 @@ export default function LoginPage() {
             .json()
             .catch(() => null)
             .then((data) => {
-              throw new Error(data?.message || "Invalid credentials");
+              throw new Error(data?.message || "Login failed.");
             });
         }
 
         return await response.json(); // jika Anda ingin membaca body
       })
-      .then(() => { refreshUser(); })
-      .catch((err) => { setError(err.message); })
+      .then((data) => {
+        refreshUser();
+        showToast(data.message, 'success')
+      })
+      .catch((err) => {
+        setError(err.message);
+        showToast(err.message, 'error');
+      })
       .finally(() => { setLoading(false); });
   };
 

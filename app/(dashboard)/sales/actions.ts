@@ -18,9 +18,13 @@ export async function confirmSale(id: string) {
   })
 }
 
-export async function settleSale(id: string) {
+export async function settleSale(id: string, amount: number) {
   return apiFetch(`${apiUrl}/sales/${id}/settle`, {
-    method: 'POST'
+    method: 'POST',
+    body: JSON.stringify({
+      amount: amount,
+    })
+
   })
 }
 

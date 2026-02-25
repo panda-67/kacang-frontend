@@ -43,11 +43,9 @@ export default function Topbar({ open, setOpen }: { open: any, setOpen: any }) {
           <h1 className="text-xs font-medium text-slate-400">
             Active Location
           </h1>
-          {/* {user?.role !== 'manager' && ( */}
           <p className="text-sm font-semibold text-slate-200">
             {user?.activeLocationName}
           </p>
-          {/* )} */}
         </div>
       </div>
 
@@ -56,7 +54,7 @@ export default function Topbar({ open, setOpen }: { open: any, setOpen: any }) {
           value={user?.activeLocation}
           onChange={(e) => setActiveLocation(e.target.value)}
         >
-          {user?.accessibleLocations.map((loc: any) => (
+          {user?.accessibleLocations?.map((loc: any) => (
             <option key={loc.id} value={loc.id}>
               {loc.name}
             </option>
@@ -68,8 +66,14 @@ export default function Topbar({ open, setOpen }: { open: any, setOpen: any }) {
       <div className="flex items-center gap-4">
 
         {/* Desktop business status */}
-        <div className="hidden md:inline-flex rounded-lg bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-400">
-          Business Day: OPEN
+        <div
+          className={`hidden md:inline-flex rounded-lg px-3 py-1 text-xs font-medium
+            ${user?.businessDay?.open
+              ? "bg-emerald-500/20 text-emerald-400"
+              : "bg-rose-500/20 text-rose-400"
+            }`}
+        >
+          Business Day: {user?.businessDay?.open ? "OPEN" : "CLOSED"}
         </div>
 
         {user && (
