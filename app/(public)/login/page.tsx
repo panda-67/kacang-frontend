@@ -19,7 +19,11 @@ export default function LoginPage() {
   // Redirect jika sudah login
   useEffect(() => {
     if (!loading && user) {
-      router.push("/overview");
+      if (user.role === 'operator') {
+        router.push("/sales");
+      } else {
+        router.push("/overview");
+      }
     }
   }, [loading, user, router]);
 

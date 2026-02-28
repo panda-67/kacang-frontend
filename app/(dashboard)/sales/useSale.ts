@@ -42,6 +42,8 @@ export function useSale() {
     try {
       const data = await startTodaySale()
       setSale(data)
+    } catch (err: any) {
+      await showError(err.message)
     } finally {
       setProcessing(false)
     }

@@ -49,17 +49,26 @@ export default function Topbar({ open, setOpen }: { open: any, setOpen: any }) {
         </div>
       </div>
 
-      {user?.role === 'manager' && (
-        <select
-          value={user?.activeLocation}
-          onChange={(e) => setActiveLocation(e.target.value)}
-        >
-          {user?.accessibleLocations?.map((loc: any) => (
-            <option key={loc.id} value={loc.id}>
-              {loc.name}
-            </option>
-          ))}
-        </select>
+      {user?.role && ['manager', 'owner'].includes(user.role) && (
+        <div className="space-y-2">
+          <div className="relative">
+            <select
+              value={user.activeLocation ?? ''}
+              onChange={(e) => setActiveLocation(e.target.value)}
+              className="w-full rounded-lg bg-slate-800 border border-slate-700 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
+            >
+              <option value="" disabled>
+                Select location
+              </option>
+
+              {user.accessibleLocations?.map((loc: any) => (
+                <option key={loc.id} value={loc.id}>
+                  {loc.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       )}
 
       {/* RIGHT */}
@@ -109,13 +118,19 @@ export default function Topbar({ open, setOpen }: { open: any, setOpen: any }) {
                   <p className="text-xs text-slate-400">
                     Active Location
                   </p>
-                  <p className="text-sm font-semibold text-slate-200">
-                    Main Store
+                  <p className="text-sm text-center font-semibold text-slate-200">
+                    {user?.activeLocationName}
                   </p>
                 </div>
 
-                <div className="md:hidden mb-3 w-max rounded-lg bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-400">
-                  Business Day: OPEN
+                <div
+                  className={`md:hidden mb-3 rounded-lg px-3 py-1 text-xs font-medium
+                    ${user?.businessDay?.open
+                      ? "bg-emerald-500/20 text-emerald-400"
+                      : "bg-rose-500/20 text-rose-400"
+                    }`}
+                >
+                  Business Day: {user?.businessDay?.open ? "OPEN" : "CLOSED"}
                 </div>
 
                 <button

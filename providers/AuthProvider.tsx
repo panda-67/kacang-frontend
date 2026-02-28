@@ -8,11 +8,13 @@ type Location = {
   name: string;
 }
 
+type Role = 'manager' | 'owner' | 'operator';
+
 type User = {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role: Role;
   roleName: string;
   activeLocation: string;
   activeLocationName: string | null;

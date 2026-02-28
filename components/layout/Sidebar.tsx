@@ -7,12 +7,22 @@ import {
   ShoppingCart,
   Boxes,
   BarChart3,
+  ArrowRightLeft,
+  ArrowDownCircle,
 } from "lucide-react";
 
 const menu = [
   { name: "Overview", href: "/overview", icon: LayoutDashboard },
   { name: "Sales", href: "/sales", icon: ShoppingCart },
-  { name: "Inventory", href: "/inventory", icon: Boxes },
+  {
+    name: "Inventory",
+    href: "/inventory",
+    icon: Boxes,
+    children: [
+      { name: "Production", href: "/inventory/production", icon: ArrowDownCircle },
+      { name: "Transfer", href: "/inventory/transfer", icon: ArrowRightLeft },
+    ],
+  },
   { name: "Reports", href: "/reports", icon: BarChart3 },
 ];
 
@@ -47,25 +57,73 @@ export default function Sidebar({ open, setOpen }: { open: any, setOpen: any }) 
         <nav className="space-y-1 px-3">
           {menu.map((item) => {
             const Icon = item.icon;
-            const active = pathname.startsWith(item.href);
+            const isActiveParent = pathname.startsWith(item.href);
 
             return (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition
-                  ${active
-                    ? "bg-amber-500/20 text-amber-400"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-                  }`}
-              >
-                <Icon size={18} />
-                {item.name}
-              </Link>
+              <div key={item.name}>
+                <Link
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition
+                ${isActiveParent
+                      ? "bg-amber-500/20 text-amber-400"
+                      : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                    }`}
+                >
+                  <Icon size={18} />
+                  {item.name}
+                </Link>
+
+                {item.children && isActiveParent && (
+                  <div className="ml-8 mt-1 space-y-1">
+                    {item.children.map((child) => {
+                      const isActiveChild = pathname === child.href;
+                      const Icon = child.icon;
+
+                      return (
+                        <Link
+                          key={child.name}
+                          href={child.href}
+                          onClick={() => setOpen(false)}
+                          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition
+                            ${isActiveChild
+                              ? "bg-amber-500/20 text-amber-400"
+                              : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                            }`}
+                        >
+                          <Icon size={18} />
+                          {child.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </nav>
+        {/* <nav className="space-y-1 px-3"> */}
+        {/*   {menu.map((item) => { */}
+        {/*     const Icon = item.icon; */}
+        {/*     const active = pathname.startsWith(item.href); */}
+        {/**/}
+        {/*     return ( */}
+        {/*       <Link */}
+        {/*         key={item.name} */}
+        {/*         href={item.href} */}
+        {/*         onClick={() => setOpen(false)} */}
+        {/*         className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition */}
+        {/*           ${active */}
+        {/*             ? "bg-amber-500/20 text-amber-400" */}
+        {/*             : "text-slate-400 hover:bg-slate-800 hover:text-slate-200" */}
+        {/*           }`} */}
+        {/*       > */}
+        {/*         <Icon size={18} /> */}
+        {/*         {item.name} */}
+        {/*       </Link> */}
+        {/*     ); */}
+        {/*   })} */}
+        {/* </nav> */}
       </aside>
     </>
   );

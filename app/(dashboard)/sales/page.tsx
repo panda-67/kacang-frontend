@@ -4,8 +4,10 @@ import Card from '@/components/ui/Card'
 import { useSale } from './useSale'
 import { useProducts } from './useProducts'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function SalesPage() {
+  const router = useRouter();
   const { products, refreshProducts } = useProducts()
   const { sale, loading, processing, validationErrors, start, confirm, settle, addItem, removeItem } = useSale()
   const [amountReceived, setAmountReceived] = useState<number>(0)
@@ -42,6 +44,27 @@ export default function SalesPage() {
         <div className="text-center space-y-3">
           <div className="animate-spin h-8 w-8 border-4 border-amber-400 border-t-black rounded-full mx-auto" />
           <p className="text-sm text-gray-400">Preparing today's sales session...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4 max-w-sm">
+          <div className="text-4xl">📦</div>
+          <h2 className="text-lg font-semibold">No Product in Inventory</h2>
+          <p className="text-sm text-gray-400">
+            Add products before starting a sale.
+          </p>
+
+          <button
+            onClick={() => router.push('/inventory')}
+            className="px-4 py-2 bg-amber-500 text-black rounded-lg hover:opacity-90 transition"
+          >
+            Add Product Now
+          </button>
         </div>
       </div>
     )
