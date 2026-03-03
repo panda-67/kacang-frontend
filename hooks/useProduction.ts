@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
+import { showError, showSuccess } from "@/lib/alert";
 
 type Product = {
   id: string;
@@ -62,9 +63,9 @@ export function useProductionForm(apiUrl: string) {
   }
 
   async function submit() {
-    if (!productId) throw new Error("Product required");
-    // if (!outputQty || outputQty <= 0) throw new Error("Output quantity must be > 0");
-    if (items.length === 0) throw new Error("At least one material required");
+    if (!productId) { showError("Product required"); return; }
+    if (!outputQty || outputQty <= 0) { showError("Output quantity must be greater then 0"); return; }
+    if (items.length === 0) { showError("At least one material required"); return; }
 
     setLoading(true);
     setMessage(null);
@@ -75,14 +76,12 @@ export function useProductionForm(apiUrl: string) {
         body: JSON.stringify({ quantity: outputQty, materials: items }),
       });
 
-      if (!res.ok) throw new Error("Production failed");
-
       setProductId("");
       setOutputQty(0);
       setItems([]);
-      setMessage("Production executed successfully");
+      await showSuccess(res.message || "Production executed successfully");
     } catch (err: any) {
-      setMessage(err.message || "Error executing production");
+      showError(err.message || "Error executing production");
     } finally {
       setLoading(false);
     }

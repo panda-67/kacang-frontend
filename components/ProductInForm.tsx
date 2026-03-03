@@ -1,7 +1,6 @@
 "use client";
 
 import { useProductionForm } from "@/hooks/useProduction";
-import { useEffect } from "react";
 
 export default function ProductInForm() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
@@ -10,8 +9,6 @@ export default function ProductInForm() {
     items, addMaterialRow, removeMaterialRow, updateMaterial,
     loading, message, submit
   } = useProductionForm(apiUrl);
-
-  useEffect(() => { console.log("Material", items) }, [items])
 
   return (
     <form onSubmit={e => { e.preventDefault(); submit(); }} className="space-y-6 p-6 bg-slate-900 rounded-xl border border-slate-800">

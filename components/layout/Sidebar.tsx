@@ -9,6 +9,7 @@ import {
   BarChart3,
   ArrowRightLeft,
   ArrowDownCircle,
+  RotateCwIcon,
 } from "lucide-react";
 
 const menu = [
@@ -19,8 +20,9 @@ const menu = [
     href: "/inventory",
     icon: Boxes,
     children: [
-      { name: "Production", href: "/inventory/production", icon: ArrowDownCircle },
+      { name: "Production", href: "/inventory/production", icon: RotateCwIcon },
       { name: "Transfer", href: "/inventory/transfer", icon: ArrowRightLeft },
+      { name: "Stok-In", href: "/inventory/stock-in", icon: ArrowDownCircle },
     ],
   },
   { name: "Reports", href: "/reports", icon: BarChart3 },

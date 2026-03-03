@@ -1,9 +1,12 @@
 "use client";
 
 import { apiFetch } from "@/lib/api";
-import { useAuth } from "@/providers/AuthProvider";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+
+type InventoryTableProps = {
+  type?: "sales_point" | "central";
+};
 
 type InventoryLocation = {
   id: number;
@@ -25,17 +28,17 @@ type Location = {
   name: string;
 }
 
-export default function InventoryTable() {
+export default function InventoryTable({ type }: (InventoryTableProps)) {
   const [data, setData] = useState<InventoryItem[]>([]);
   const [locationFilter, setLocationFilter] = useState<string | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  const load = async (location?: string | null) => {
+  const load = async (type?: string, location?: string | null) => {
     try {
       const url = location
-        ? `${apiUrl}/inventory?location=${location}`
-        : `${apiUrl}/inventory`;
+        ? `${apiUrl}/inventory?type=${type}&location=${location}`
+        : `${apiUrl}/inventory?type=${type}`;
 
       const result = await apiFetch(url);
       setData(result);
@@ -46,20 +49,20 @@ export default function InventoryTable() {
 
   // Load pertama kali TANPA filter
   useEffect(() => {
-    load(null);
-  }, []);
+    load(type, null);
+  }, [type]);
 
   // Reload hanya jika filter halaman ini berubah
   useEffect(() => {
     if (locationFilter !== null) {
-      load(locationFilter);
+      load(type, locationFilter);
     }
-  }, [locationFilter]);
+  }, [locationFilter, type]);
 
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const result = await apiFetch(`${apiUrl}/locations`);
+        const result = await apiFetch(`${apiUrl}/locations?type=${type}`);
         setLocations(result);
       } catch (err) {
         console.error(err);
@@ -67,7 +70,7 @@ export default function InventoryTable() {
     };
 
     fetchLocations();
-  }, [apiUrl]);
+  }, [apiUrl, type]);
 
   if (!data.length) {
     return (
@@ -104,17 +107,21 @@ export default function InventoryTable() {
           <thead className="border-b border-slate-800 bg-slate-950">
             <tr>
               <th className="p-4 text-left text-xs uppercase tracking-wide text-slate-500">
-                Product
+                {type === 'central' ? 'Product/Material' : 'Product'}
               </th>
               <th className="p-4 text-left text-xs uppercase tracking-wide text-slate-500">
                 Location
               </th>
-              <th className="p-4 text-right text-xs uppercase tracking-wide text-slate-500">
-                Stock
-              </th>
-              <th className="p-4 text-right text-xs uppercase tracking-wide text-slate-500">
-                Reserved
-              </th>
+              {type === 'sales_point' &&
+                <>
+                  <th className="p-4 text-right text-xs uppercase tracking-wide text-slate-500">
+                    Stock
+                  </th>
+                  <th className="p-4 text-right text-xs uppercase tracking-wide text-slate-500">
+                    Reserved
+                  </th>
+                </>
+              }
               <th className="p-4 text-right text-xs uppercase tracking-wide text-slate-500">
                 Available
               </th>
@@ -122,21 +129,23 @@ export default function InventoryTable() {
             </tr>
           </thead>
           <tbody>
-            {data.flatMap((product) =>
+            {data.flatMap((product, i) =>
               product.locations.map((loc) => {
                 const available = loc.available;
 
                 return (
                   <tr
-                    key={`${product.id}-${loc.id}`}
+                    key={`${i}-${product.id}-${loc.id}`}
                     className="border-b border-slate-800 hover:bg-slate-800/40 transition"
                   >
                     <td className="p-4 text-slate-100">{product.name}</td>
                     <td className="p-4 text-slate-400">{loc.name}</td>
-                    <td className="p-4 text-right">{loc.stock}</td>
-                    <td className="p-4 text-right text-slate-400">
-                      {loc.reserved}
-                    </td>
+                    {type === 'sales_point' &&
+                      <>
+                        <td className="p-4 text-right">{loc.stock}</td>
+                        <td className="p-4 text-right text-slate-400"> {loc.reserved} </td>
+                      </>
+                    }
                     <td
                       className={`p-4 text-right font-medium ${available > 0 ? "text-amber-400" : "text-red-400"
                         }`}
@@ -144,7 +153,7 @@ export default function InventoryTable() {
                       {available}
                     </td>
                     <td className="p-4 text-right">
-                      {!loc.name.includes('Central') &&
+                      {type === 'sales_point' &&
                         <Link
                           href={`/inventory/transfer?product=${product.id}&location=${loc.id}`}
                           className="inline-flex items-center justify-center rounded-lg bg-amber-500 px-4 py-2 text-xs font-semibold tracking-wide text-white transition hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-400"
@@ -163,9 +172,9 @@ export default function InventoryTable() {
 
 
       <div className="md:hidden space-y-4">
-        {data.map((product) => (
+        {data.map((product, i) => (
           <div
-            key={product.id}
+            key={`${i}-${product.id}`}
             className="rounded-xl border border-slate-800 bg-slate-900 p-4"
           >
             <div className="mb-3 text-sm font-semibold text-slate-100">
@@ -186,19 +195,23 @@ export default function InventoryTable() {
                     </div>
 
                     <div className="grid grid-cols-3 gap-3 text-xs text-slate-400">
-                      <div>
-                        <div>Stock</div>
-                        <div className="mt-1 text-sm text-slate-200">
-                          {loc.stock}
-                        </div>
-                      </div>
+                      {type === 'sales_point' &&
+                        <>
+                          <div>
+                            <div>Stock</div>
+                            <div className="mt-1 text-sm text-slate-200">
+                              {loc.stock}
+                            </div>
+                          </div>
 
-                      <div>
-                        <div>Reserved</div>
-                        <div className="mt-1 text-sm text-slate-200">
-                          {loc.reserved}
-                        </div>
-                      </div>
+                          <div>
+                            <div>Reserved</div>
+                            <div className="mt-1 text-sm text-slate-200">
+                              {loc.reserved}
+                            </div>
+                          </div>
+                        </>
+                      }
 
                       <div>
                         <div>Available</div>
@@ -213,7 +226,7 @@ export default function InventoryTable() {
                       </div>
                     </div>
 
-                    {!loc.name.includes('Central') &&
+                    {type === 'sales_point' &&
                       <Link
                         href={`/inventory/transfer?product=${product.id}&location=${loc.id}`}
                         className="inline-flex items-center justify-center rounded-lg bg-amber-500 px-4 py-2 text-xs font-semibold tracking-wide text-white transition hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-400"
@@ -228,7 +241,7 @@ export default function InventoryTable() {
             </div>
           </div>
         ))}
-      </div>
+      </div >
     </>
   );
 
