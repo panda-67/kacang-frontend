@@ -8,7 +8,7 @@ export default function InventoryPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 px-6 py-4">
-      <div className="mx-auto max-w-md lg:max-w-5xl space-y-6">
+      <div className="mx-auto max-w-5xl space-y-6">
 
         <div className="flex gap-3 flex-col justify-center md:flex-row  md:items-center md:justify-between">
           <div>

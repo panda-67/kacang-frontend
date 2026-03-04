@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useAuth } from '@/providers/AuthProvider'
+import { showCancel, showConfirm, showError, showSettle, showSuccess } from '@/lib/alert';
 import {
   fetchTodaySale,
   startTodaySale,
@@ -10,8 +12,6 @@ import {
   cancelSale,
   removeSaleItem
 } from './actions'
-import { useAuth } from '@/providers/AuthProvider'
-import { showCancel, showConfirm, showError, showSettle, showSuccess, showToast } from '@/lib/alert';
 
 export function useSale() {
   const [validationErrors, setValidationErrors] = useState<any>(null);
@@ -20,6 +20,15 @@ export function useSale() {
   const [sale, setSale] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+
+  const formatNumberID = new Intl.NumberFormat('id-ID')
+
+  const statusColor: Record<string, string> = {
+    draft: 'bg-slate-600/80 text-slate-100',
+    confirmed: 'bg-amber-500/80 text-black',
+    settled: 'bg-green-600/80 text-white',
+    cancelled: 'bg-red-600/80 text-white',
+  }
 
   useEffect(() => {
     if (user) { load() }
@@ -118,6 +127,7 @@ export function useSale() {
       setError(err.message)
       await showError(err.message)
     } finally {
+      load()
       setProcessing(false)
     }
   }
@@ -156,17 +166,31 @@ export function useSale() {
     }
   }
 
+  function toLocaleID(value: number) {
+    return formatNumberID.format(value)
+  }
+
+  function getDraftQty(productId: string) {
+    const item = sale.items?.find((i: any) => i.product_id === productId)
+    return item ? item.quantity : 0
+  }
+
+
   return {
     sale,
     loading,
     processing,
     error,
     validationErrors,
+    statusColor,
+    load,
     start,
     confirm,
     settle,
     cancel,
     addItem,
-    removeItem
+    removeItem,
+    toLocaleID,
+    getDraftQty
   }
 }
