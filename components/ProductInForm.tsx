@@ -11,7 +11,8 @@ export default function ProductInForm() {
   } = useProductionForm(apiUrl);
 
   return (
-    <form onSubmit={e => { e.preventDefault(); submit(); }} className="space-y-6 p-6 bg-slate-900 rounded-xl border border-slate-800">
+    <form onSubmit={e => { e.preventDefault(); submit(); }} className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-sm">
+
       {message && (
         <div className="text-sm text-amber-400">
           {message}
@@ -19,7 +20,7 @@ export default function ProductInForm() {
       )}
 
       <div>
-        <label className="text-xs text-slate-400 block mb-1">Product</label>
+        <label className="text-xs uppercase tracking-wide text-slate-400 block mb-1">Product</label>
         <select
           value={productId}
           onChange={e => setProductId(e.target.value)}
@@ -33,7 +34,7 @@ export default function ProductInForm() {
       </div>
 
       <div>
-        <label className="text-xs text-slate-400 block mb-1">Output Quantity</label>
+        <label className="text-xs uppercase tracking-wide text-slate-400 block mb-1">Output Quantity</label>
         <div className="flex gap-3 items-center">
           <input
             type="number"
@@ -50,7 +51,7 @@ export default function ProductInForm() {
 
       <div>
         <div className="flex justify-between items-center mb-2">
-          <span className="text-xs text-slate-400">Materials</span>
+          <span className="text-xs uppercase tracking-wide text-slate-400">Materials</span>
           <button
             type="button"
             onClick={addMaterialRow}

@@ -76,10 +76,12 @@ export function useProductionForm(apiUrl: string) {
         body: JSON.stringify({ quantity: outputQty, materials: items }),
       });
 
+      await showSuccess(res.message || "Production executed successfully");
+
       setProductId("");
       setOutputQty(0);
       setItems([]);
-      await showSuccess(res.message || "Production executed successfully");
+
     } catch (err: any) {
       showError(err.message || "Error executing production");
     } finally {
