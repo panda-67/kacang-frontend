@@ -1,15 +1,17 @@
 "use client"
 
-import { useSale } from './useSale'
-import { useProducts } from './useProducts'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useProducts } from '@/hooks/useProducts'
+import { useAuth } from '@/providers/AuthProvider'
+import { useSale } from './useSale'
 import { NoProducts, NoSales, SaleLoading } from '@/components/sales/SaleEmptyStates'
 import { SaleItemsSection } from '@/components/sales/SaleItemsSection'
 import { SaleSummarySection } from '@/components/sales/SaleSummarySection'
 
 export default function SalesPage() {
   const router = useRouter();
+  const { activeLocation } = useAuth();
   const { products, refreshProducts } = useProducts();
   const [amountReceived, setAmountReceived] = useState<number>(0);
 
@@ -20,7 +22,7 @@ export default function SalesPage() {
 
   useEffect(() => {
     refreshProducts()
-  }, [sale])
+  }, [sale, activeLocation])
 
   if (loading) { return <SaleLoading /> }
 

@@ -1,4 +1,5 @@
 import Card from "@/components/ui/Card"
+import { formatDateID } from "@/lib/utils"
 import { Product, Sale } from "@/type/sales"
 
 type Props = {
@@ -12,27 +13,27 @@ type Props = {
 }
 
 export function SaleItemsSection({ sale, products, addItem, removeItem, getDraftQty, toLocaleID, statusColor }: Props) {
-  const formatDateID = (date: string) => {
-    return new Intl.DateTimeFormat('id-ID', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(new Date(date))
-  }
-
   return (
     <div className="lg:col-span-7">
       <Card>
-        <div className="flex justify-between items-center">
-          <div>
-            <p className="text-sm text-slate-400">Invoice</p>
-            <p className="font-medium">{sale.invoice_number}</p>
-            <p className="text-sm text-slate-300">{formatDateID(sale.sale_date)}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <p className="text-xs uppercase tracking-wide text-slate-500">
+              Invoice
+            </p>
+
+            <p className="text-lg font-semibold text-white">
+              {sale.invoice_number}
+            </p>
+
+            <p className="text-sm text-slate-400">
+              {formatDateID(sale.sale_date)}
+            </p>
           </div>
 
-          <span className={`text-xs px-3 py-1 rounded ${statusColor[sale.status] ?? 'bg-slate-700 text-white'}`}>
+          <span
+            className={`self-start text-xs font-medium px-3 py-1.5 rounded-lg ${statusColor[sale.status] ?? 'bg-slate-700 text-white'}`}
+          >
             {sale.status.toUpperCase()}
           </span>
         </div>

@@ -49,7 +49,3 @@ export async function removeSaleItem(id: string, itemId: string) {
     method: 'DELETE',
   })
 }
-
-export async function fetchProducts() {
-  return apiFetch(`${apiUrl}/products`)
-}

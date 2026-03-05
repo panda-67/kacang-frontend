@@ -1,7 +1,22 @@
-export async function apiFetch(
-  url: string,
-  options: RequestInit = {}
-) {
+import { QueryParams } from '@/type/api';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export async function fetchLocations(params?: QueryParams) {
+  const query = buildQuery(params);
+  return apiFetch(`${BASE_URL}/locations${query}`);
+}
+
+export async function fetchMaterials(params?: QueryParams) {
+  const query = buildQuery(params)
+  return apiFetch(`${BASE_URL}/materials${query}`)
+}
+
+export async function fetchProducts(params?: QueryParams) {
+  const query = buildQuery(params)
+  return apiFetch(`${BASE_URL}/products${query}`)
+}
+
+export async function apiFetch(url: string, options: RequestInit = {}) {
   const response = await fetch(url, {
     credentials: 'include',
     headers: {
@@ -35,3 +50,20 @@ export async function apiFetch(
 
   return data
 }
+
+export function buildQuery(params?: QueryParams) {
+  if (!params) return "";
+
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value != null) {
+      searchParams.append(key, String(value));
+    }
+  });
+
+  const queryString = searchParams.toString();
+  return queryString ? `?${queryString}` : "";
+}
+
+

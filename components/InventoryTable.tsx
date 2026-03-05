@@ -1,8 +1,10 @@
 "use client";
 
-import { apiFetch } from "@/lib/api";
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { apiFetch } from "@/lib/api";
+import { showError } from "@/lib/alert";
+import { useLocations } from "@/hooks/useLocations";
 
 type InventoryTableProps = {
   type?: "sales_point" | "central";
@@ -23,16 +25,12 @@ type InventoryItem = {
   locations: InventoryLocation[];
 };
 
-type Location = {
-  id: string;
-  name: string;
-}
-
 export default function InventoryTable({ type }: (InventoryTableProps)) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const { locations, setQuery } = useLocations();
+
   const [data, setData] = useState<InventoryItem[]>([]);
   const [locationFilter, setLocationFilter] = useState<string | null>(null);
-  const [locations, setLocations] = useState<Location[]>([]);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const load = async (type?: string, location?: string | null) => {
     try {
@@ -42,14 +40,15 @@ export default function InventoryTable({ type }: (InventoryTableProps)) {
 
       const result = await apiFetch(url);
       setData(result);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      showError(err.message);
     }
   };
 
   // Load pertama kali TANPA filter
   useEffect(() => {
     load(type, null);
+    setQuery({ type: type })
   }, [type]);
 
   // Reload hanya jika filter halaman ini berubah
@@ -58,19 +57,6 @@ export default function InventoryTable({ type }: (InventoryTableProps)) {
       load(type, locationFilter);
     }
   }, [locationFilter, type]);
-
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const result = await apiFetch(`${apiUrl}/locations?type=${type}`);
-        setLocations(result);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchLocations();
-  }, [apiUrl, type]);
 
   if (!data.length) {
     return (

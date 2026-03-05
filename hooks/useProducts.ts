@@ -1,27 +1,37 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { fetchProducts } from './actions'
-import { useAuth } from '@/providers/AuthProvider'
+import { showError } from '@/lib/alert';
+import { QueryParams } from '@/type/api';
+import { fetchProducts } from '@/lib/api';
+
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  unit: string;
+  stock: number;
+  available: number
+}
 
 export function useProducts() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [query, setQuery] = useState<QueryParams>({});
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const { user } = useAuth();
 
   useEffect(() => {
-    if (user) { load() }
-  }, [user])
-
+    load()
+  }, [])
 
   async function load() {
     setLoading(true)
     try {
-      const data = await fetchProducts()
+      const data = await fetchProducts(query)
       setProducts(data)
-    } catch {
+    } catch (err: any) {
       setProducts([])
+      showError(err.message)
     } finally {
       setLoading(false)
     }
@@ -30,7 +40,7 @@ export function useProducts() {
   async function refreshProducts() {
     setProcessing(true)
     try {
-      const data = await fetchProducts()
+      const data = await fetchProducts(query)
       setProducts(data)
     } finally {
       setProcessing(false)
@@ -38,9 +48,10 @@ export function useProducts() {
   }
 
   return {
-    products,
     loading,
     processing,
+    products,
+    setQuery,
     refreshProducts
   }
 }

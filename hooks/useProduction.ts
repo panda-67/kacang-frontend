@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, fetchMaterials, fetchProducts } from "@/lib/api";
 import { showError, showSuccess } from "@/lib/alert";
 
 type Product = {
@@ -35,8 +35,8 @@ export function useProductionForm(apiUrl: string) {
     const fetchData = async () => {
       try {
         const [prodResult, matResult] = await Promise.all([
-          apiFetch(`${apiUrl}/products`),
-          apiFetch(`${apiUrl}/materials`)
+          fetchProducts(),
+          fetchMaterials()
         ]);
         setProducts(prodResult);
         setMaterials(matResult.map((m: Material) => ({ ...m, id: String(m.id) })));
