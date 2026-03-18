@@ -3,10 +3,22 @@
 import Card from "@/components/ui/Card";
 import { formatDateID } from "@/lib/utils";
 import { useBusinessDay } from "./useBusinessDay";
+import { useState } from "react";
 
 export default function MultiLocationOverviewPage() {
   const { businessDays, loadingMap, locations, type, setType, handleOpen, handleClose } = useBusinessDay();
+  const [amount, setAmount] = useState("");
+  const [showAmountModal, setShowAmountModal] = useState(false);
+  const [closingLocation, setClosingLocation] = useState("");
 
+  const onClickClose = (locationId: string, type: string) => {
+    if (type === "sales_point") {
+      setClosingLocation(locationId);
+      setShowAmountModal(true);
+    } else {
+      handleClose(locationId, null);
+    }
+  };
   return (
     <div className="space-y-8">
 
@@ -78,11 +90,11 @@ export default function MultiLocationOverviewPage() {
                   </div>
                 )}
 
-                {type === "central" && bd && bd.status === "open" && (
+                {bd && bd.status === "open" && (
                   <button
                     disabled={loading}
-                    onClick={() => handleClose(location.id)}
-                    className="px-4 py-2 rounded-md bg-slate-500 text-white text-sm"
+                    onClick={() => onClickClose(location.id, type)}
+                    className="px-4 py-2 rounded-md bg-slate-500 text-white text-sm cursor-pointer"
                   >
                     Close Business Day
                   </button>
@@ -92,7 +104,7 @@ export default function MultiLocationOverviewPage() {
                   <button
                     disabled={loading}
                     onClick={() => handleOpen(location.id)}
-                    className="px-4 py-2 rounded-md bg-amber-500 text-white text-sm"
+                    className="px-4 py-2 rounded-md bg-amber-500 text-white text-sm cursor-pointer"
                   >
                     Open Business Day
                   </button>
@@ -102,6 +114,43 @@ export default function MultiLocationOverviewPage() {
           );
         })}
       </div>
+
+      {showAmountModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40">
+          <div className="bg-slate-950 border border-slate-800 p-4 rounded-md w-80 space-y-3">
+            <h3 className="text-sm font-medium">Enter Cash Amount</h3>
+
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="w-full border border-slate-800 rounded px-2 py-1 text-sm"
+              placeholder="Cash counted"
+            />
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowAmountModal(false)}
+                className="px-3 py-1 text-sm border border-slate-800 rounded cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                disabled={!amount}
+                onClick={() => {
+                  handleClose(closingLocation, amount);
+                  setShowAmountModal(false);
+                  setAmount("");
+                }}
+                className="px-3 py-1 text-sm bg-slate-600 text-white rounded cursor-pointer disabled:cursor-not-allowed"
+              >
+                Confirm Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

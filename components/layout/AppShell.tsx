@@ -16,7 +16,7 @@ export default function AppShell({ children, }: { children: React.ReactNode; }) 
         <Topbar open={open} setOpen={setOpen} />
 
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="mx-auto w-full max-w-screen-2xl">
+          <div className="mx-auto w-full max-w-svw md:max-w-screen-2xl">
             {children}
           </div>
         </main>

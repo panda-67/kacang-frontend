@@ -13,10 +13,13 @@ export async function openBusinessDay(locationId: string) {
   });
 }
 
-export async function closeBusinessDay(locationId: string) {
+export async function closeBusinessDay(locationId: string, amount?: string | null) {
   return apiFetch(`${BASE_URL}/business-day/close`, {
     method: "POST",
-    body: JSON.stringify({ location: locationId }),
+    body: JSON.stringify({
+      location: locationId,
+      amount: amount
+    }),
   });
 }
 

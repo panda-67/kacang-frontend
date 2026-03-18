@@ -7,7 +7,7 @@ import { showError } from "@/lib/alert";
 import { useLocations } from "@/hooks/useLocations";
 
 type InventoryTableProps = {
-  type?: "sales_point" | "central";
+  type: "sales_point" | "central";
 };
 
 type InventoryLocation = {
@@ -30,33 +30,33 @@ export default function InventoryTable({ type }: (InventoryTableProps)) {
   const { locations, setQuery } = useLocations();
 
   const [data, setData] = useState<InventoryItem[]>([]);
-  const [locationFilter, setLocationFilter] = useState<string | null>(null);
+  const [locationFilter, setLocationFilter] = useState<string | null>("0");
 
-  const load = async (type?: string, location?: string | null) => {
+  async function load(currentType: string, location: string | null) {
     try {
-      const url = location
-        ? `${apiUrl}/inventory?type=${type}&location=${location}`
-        : `${apiUrl}/inventory?type=${type}`;
+      const loc = location === "0" ? null : location;
+
+      const url = loc
+        ? `${apiUrl}/inventory?type=${currentType}&location=${loc}`
+        : `${apiUrl}/inventory?type=${currentType}`;
 
       const result = await apiFetch(url);
       setData(result);
     } catch (err: any) {
       showError(err.message);
     }
-  };
+  }
 
-  // Load pertama kali TANPA filter
+  // reset location ketika type berubah
   useEffect(() => {
-    load(type, null);
-    setQuery({ type: type })
-  }, [type]);
+    setLocationFilter(null);
+    setQuery(prev => ({ ...prev, type }));
+  }, [type, setQuery]);
 
-  // Reload hanya jika filter halaman ini berubah
+  // satu-satunya tempat fetch terjadi
   useEffect(() => {
-    if (locationFilter !== null) {
-      load(type, locationFilter);
-    }
-  }, [locationFilter, type]);
+    load(type, locationFilter);
+  }, [type, locationFilter]);
 
   if (!data.length) {
     return (

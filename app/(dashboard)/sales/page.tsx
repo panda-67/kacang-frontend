@@ -31,30 +31,42 @@ export default function SalesPage() {
   if (!sale) { return <NoSales onStart={start} /> }
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 md:p-6">
-      {/* LEFT - Items */}
-      <SaleItemsSection
-        sale={sale}
-        products={products}
-        addItem={addItem}
-        removeItem={removeItem}
-        getDraftQty={getDraftQty}
-        toLocaleID={toLocaleID}
-        statusColor={statusColor}
-      />
+    <div className='space-y-8'>
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-100">
+          Inventory Overview
+        </h1>
+        <p className="text-sm text-slate-400">
+          Current stock per product
+        </p>
+      </div>
 
-      {/* RIGHT - Summary */}
-      <SaleSummarySection
-        sale={sale}
-        processing={processing}
-        amountReceived={amountReceived}
-        setAmountReceived={setAmountReceived}
-        confirm={confirm}
-        cancel={cancel}
-        settle={settle}
-        validationErrors={validationErrors}
-        toLocaleID={toLocaleID}
-      />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
+        {/* LEFT - Items */}
+        <SaleItemsSection
+          sale={sale}
+          products={products}
+          addItem={addItem}
+          removeItem={removeItem}
+          getDraftQty={getDraftQty}
+          toLocaleID={toLocaleID}
+          statusColor={statusColor}
+        />
+
+        {/* RIGHT - Summary */}
+        <SaleSummarySection
+          sale={sale}
+          processing={processing}
+          amountReceived={amountReceived}
+          setAmountReceived={setAmountReceived}
+          confirm={confirm}
+          cancel={cancel}
+          settle={settle}
+          validationErrors={validationErrors}
+          toLocaleID={toLocaleID}
+        />
+      </div>
     </div>
   )
 }

@@ -2,18 +2,15 @@ import { QueryParams } from '@/type/api';
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function fetchLocations(params?: QueryParams) {
-  const query = buildQuery(params);
-  return apiFetch(`${BASE_URL}/locations${query}`);
+  return apiFetch(`${BASE_URL}/locations${toQuery(params)}`);
 }
 
 export async function fetchMaterials(params?: QueryParams) {
-  const query = buildQuery(params)
-  return apiFetch(`${BASE_URL}/materials${query}`)
+  return apiFetch(`${BASE_URL}/materials${toQuery(params)}`)
 }
 
 export async function fetchProducts(params?: QueryParams) {
-  const query = buildQuery(params)
-  return apiFetch(`${BASE_URL}/products${query}`)
+  return apiFetch(`${BASE_URL}/products${toQuery(params)}`)
 }
 
 export async function apiFetch(url: string, options: RequestInit = {}) {
@@ -51,13 +48,13 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
   return data
 }
 
-export function buildQuery(params?: QueryParams) {
+export function toQuery(params?: QueryParams) {
   if (!params) return "";
 
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
-    if (value != null) {
+    if (value !== undefined && value !== null && value !== "") {
       searchParams.append(key, String(value));
     }
   });

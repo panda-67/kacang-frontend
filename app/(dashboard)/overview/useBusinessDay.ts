@@ -3,7 +3,7 @@
 import { fetchLocations } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { closeBusinessDay, fetchBusinessDay, openBusinessDay } from "./actions";
-import { showError, showSuccess } from "@/lib/alert";
+import { showConfirm, showError, showSuccess } from "@/lib/alert";
 
 type Location = {
   id: string;
@@ -56,11 +56,14 @@ export function useBusinessDay() {
     setLoadingMap((prev) => ({ ...prev, [locationId]: false }));
   };
 
-  const handleClose = async (locationId: string) => {
+  const handleClose = async (locationId: string, amount?: string | null) => {
     setLoadingMap((prev) => ({ ...prev, [locationId]: true }));
 
+    const result = await showConfirm('Are you sure closing the day?')
+    if (!result.isConfirmed) return
+
     try {
-      const data = await closeBusinessDay(locationId);
+      const data = await closeBusinessDay(locationId, amount);
       showSuccess(data.message)
     } catch (err: any) {
       showError(err.message)

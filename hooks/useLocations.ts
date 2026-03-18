@@ -18,7 +18,7 @@ export function useLocations() {
 
   useEffect(() => {
     load()
-  }, [])
+  }, [query])
 
   async function load() {
     setLoading(true)
